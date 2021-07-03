@@ -36,19 +36,6 @@ input_file = open("data.txt", "r")
 x_values = list()
 y_values = list()
 
-sum_of_x = 0
-sum_of_y = 0
-sum_of_z = 0
-sum_of_x_squared = 0
-sum_of_x_cubed = 0
-sum_of_x_power4 = 0
-sum_of_x_power5 = 0
-sum_of_x_power6 = 0
-sum_of_xy = 0
-sum_of_xSquared_y = 0
-sum_of_xCubed_y = 0
-sum_of_xz = 0
-
 lines = input_file.readlines()
 
 for line in lines:
@@ -56,27 +43,26 @@ for line in lines:
     y_values.append(float(line.split(" ")[1]))
 
 n = len(x_values)
+x = np.array(x_values)
+y = np.array(y_values)
 
-plt.figure(figsize=(12, 15))
 
-for i in range(0, len(x_values)):
-    sum_of_x += x_values[i]
-    sum_of_y += y_values[i]
-    sum_of_z += math.log(y_values[i])
-    sum_of_x_squared += (x_values[i] ** 2)
-    sum_of_x_cubed += (x_values[i] ** 3)
-    sum_of_x_power4 += (x_values[i] ** 4)
-    sum_of_x_power5 += (x_values[i] ** 5)
-    sum_of_x_power6 += (x_values[i] ** 6)
-    sum_of_xy += (x_values[i] * y_values[i])
-    sum_of_xSquared_y += (x_values[i] * x_values[i] * y_values[i])
-    sum_of_xCubed_y += (x_values[i] * x_values[i] * x_values[i] * y_values[i])
-    sum_of_xz += (x_values[i] * (math.log(y_values[i])))
+sum_of_x = np.sum(x)
+sum_of_y = np.sum(y)
+sum_of_z = np.sum(np.log(y))
+sum_of_x_squared = np.sum(x ** 2)
+sum_of_x_cubed = np.sum(x ** 3)
+sum_of_x_power4 = np.sum(x ** 4)
+sum_of_x_power5 = np.sum(x ** 5)
+sum_of_x_power6 = np.sum(x ** 6)
+sum_of_xy = np.sum(x * y)
+sum_of_xSquared_y = np.sum((x ** 2) * y)
+sum_of_xCubed_y = np.sum((x ** 3) * y)
+sum_of_xz = np.sum(x * np.log(y))
 
 
 # First Order
-a0_firstOrder = ((sum_of_x_squared * sum_of_y) - (sum_of_x * sum_of_xy)) / (
-            (n * sum_of_x_squared) - (sum_of_x * sum_of_x))
+a0_firstOrder = ((sum_of_x_squared * sum_of_y) - (sum_of_x * sum_of_xy)) / ((n * sum_of_x_squared) - (sum_of_x * sum_of_x))
 a1_firstOrder = ((n * sum_of_xy) - sum_of_x * sum_of_y) / ((n * sum_of_x_squared) - (sum_of_x * sum_of_x))
 
 print('\nConstants for First Order')
@@ -130,10 +116,9 @@ print('a3 = ', a3_thirdOrder)
 
 
 # Exponential Model-> y = ae^bx
-a0_exp = ((sum_of_x_squared * sum_of_z) - (sum_of_x * sum_of_xz)) / (
-            (n * sum_of_x_squared) - (sum_of_x * sum_of_x))
-
+a0_exp = ((sum_of_x_squared * sum_of_z) - (sum_of_x * sum_of_xz)) / ((n * sum_of_x_squared) - (sum_of_x * sum_of_x))
 a1_exp = ((n * sum_of_xz) - sum_of_x * sum_of_z) / ((n * sum_of_x_squared) - (sum_of_x * sum_of_x))
+
 a = math.exp(a0_exp)
 b = a1_exp
 
@@ -143,22 +128,22 @@ print('b = ', b)
 
 
 # Plotting Graph
-x = np.array(x_values)
-y = np.array(y_values)
 
-plt.xticks(np.arange(0, math.ceil(max(x_values)), 1))
-plt.yticks(np.arange(0, math.ceil(max(y_values)), 1))
+plt.figure(figsize=(12, 15))
+
+plt.xticks(np.arange(math.floor(min(x_values)), math.ceil(max(x_values)), 1))
+plt.yticks(np.arange(math.floor(min(y_values)), math.ceil(max(y_values)), 1))
 
 # Scattered Data Points
 plt.scatter(x, y, marker='.', s=5)
 
 
-def lf(x):
+def ff(x):
     return a0_firstOrder + a1_firstOrder * x
 
 
 # Linear Function
-plt.plot(x, lf(x), linewidth=0.5, color='g', label='First Order')
+plt.plot(x, ff(x), linewidth=0.5, color='g', label='First Order')
 
 
 def sf(x):
